@@ -1,17 +1,19 @@
-import es from './locales/en.json'
-import en from './locales/en.json'
-import {createI18n} from 'vue-i18n';
-
-/**
- * shared internationalization (i18n) instance for the application.
- * This instance is created default locale, fallback and the translation messages
- *
- */
-
-const i18n = createI18n({
-    locale: en,
-    fallbackLng: 'en',
-    messages: { en , es },
-});
-
-export default i18n;
+export const errorInterceptor = {
+    onResponse: (response) => response,
+    onError: (error) => {
+        let message
+        if (error.response) {
+            console.error('Data: ', error.response.data);
+            console.error('Satatus: ', error.response.status);
+            console.error('Headers: ', error.response.headers);
+            message = error.response.data['message'] || `Error ${error.response.status}: ${error.response.statusText}`;
+        } else if (error.request) {
+            console.error('Request: ', error.request);
+            message = 'No response received from the server. Please check your network connection';
+        } else{
+            console.error('Error Message: ', error.message);
+            message = error.message;
+        }
+        return Promise.reject(message);
+    }
+}
